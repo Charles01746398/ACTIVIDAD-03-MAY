@@ -11,7 +11,7 @@ def cargarArchivo(ruta):
 
 emisiones = cargarArchivo("DATOS/Emisiones_limpio.csv")
 
-print(emisiones.head())
+#print(emisiones.head()), para comprobar la carga de los datos
 
 entidades = emisiones["ENTIDAD"].unique()
 
@@ -54,7 +54,6 @@ comisiones = pd.read_csv("DATOS/Comisiones_limpio.csv")
 
 app = dash.Dash(__name__)
 
-# Crear el layout
 app.layout = html.Div(children=[
     html.H1(children='Número de asegurados por entidad y sexo'),
     dcc.Graph(
