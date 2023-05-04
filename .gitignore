@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+DATOS/
+
 # Distribution / packaging
 .Python
 build/
