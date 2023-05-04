@@ -9,7 +9,7 @@ def cargarArchivo(ruta):
     return pd.read_csv(ruta)
  
 
-emisiones = cargarArchivo("/Users/Carlos/ACT 03-MAY/ACTIVIDAD-03-MAY/DATOS/Emisiones_limpio.csv")
+emisiones = cargarArchivo("DATOS/Emisiones_limpio.csv")
 
 print(emisiones.head())
 
@@ -21,14 +21,13 @@ for i in entidades:
     lista_entidades.append(["Femenino", i, emisiones[(emisiones["SEXO"] == "Femenino") & (emisiones["ENTIDAD"] == i)]["NUMERO DE ASEGURADOS"].sum()])
     lista_entidades.append(["Masculino", i, emisiones[(emisiones["SEXO"] == "Masculino") & (emisiones["ENTIDAD"] == i)]["NUMERO DE ASEGURADOS"].sum()])
 
-# Creamos un nuevo DataFrame con nuestra lista de valores
 df_entidades = pd.DataFrame(lista_entidades, columns=["SEXO", "ENTIDAD", "OCURRENCIAS"]) 
 
 fig_entidades = px.bar(df_entidades, x="ENTIDAD", y="OCURRENCIAS", color="SEXO", barmode="group", 
              title="Número de asegurados por entidad y sexo")
 fig_entidades.update_layout(xaxis_title="", yaxis_title="Número de asegurados", legend_title="")
 
-comisiones = cargarArchivo("/Users/Carlos/ACT 03-MAY/ACTIVIDAD-03-MAY/DATOS/Comisiones_limpio.csv")
+comisiones = cargarArchivo("DATOS/Comisiones_limpio.csv")
 
 polizas = comisiones["MODALIDAD DE LA POLIZA"].unique()
 
@@ -44,3 +43,45 @@ df_polizas = pd.DataFrame(lista_polizas, columns=["SEXO", "MODALIDAD DE LA POLIZ
 
 fig_polizas = go.Figure
 
+import pandas as pd
+import plotly.express as px
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+
+emisiones = pd.read_csv("DATOS/Emisiones_limpio.csv")
+comisiones = pd.read_csv("DATOS/Comisiones_limpio.csv")
+
+app = dash.Dash(__name__)
+
+# Crear el layout
+app.layout = html.Div(children=[
+    html.H1(children='Número de asegurados por entidad y sexo'),
+    dcc.Graph(
+        id='entidades',
+        figure=px.bar(df_entidades, x="ENTIDAD", y="OCURRENCIAS", color="SEXO", barmode="group", 
+                      title="Número de asegurados por entidad y sexo")
+    ),
+    html.H1(children='Número de asegurados por modalidad de la póliza y sexo'),
+    dcc.Graph(
+        id='polizas',
+        figure=px.bar(df_polizas, x="MODALIDAD DE LA POLIZA", y="OCURRENCIAS", color="SEXO", barmode="group", 
+                      title="Número de asegurados por modalidad de la póliza y sexo")
+    )
+])
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    html.H1("Dashboard de Seguros"),
+    html.Div([
+        dcc.Graph(figure=fig_entidades),
+        dcc.Graph(figure=fig_polizas)
+    ], className="row")
+])
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
