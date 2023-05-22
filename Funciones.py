@@ -55,3 +55,26 @@ fig.update_layout(title="Número de asegurados por modalidad de poliza y sexo",
                   yaxis_title="OCURRENCIAS")
 
 fig.show()
+
+
+
+def cargarArchivo(ruta):
+    return pd.read_csv(ruta)
+
+lista = []
+siniestros = cargarArchivo("/Users/Carlos/ACT 03-MAY/ACTIVIDAD-03-MAY/DATOS/Siniestros_limpio.csv")
+
+entidades = siniestros["ENTIDAD"].unique()
+
+for entidad in entidades:
+    femenino_ocurrencias = siniestros[(siniestros["SEXO"] == "Femenino") & (siniestros["ENTIDAD"] == entidad)]["NUMERO DE SINIESTROS"].sum()
+    masculino_ocurrencias = siniestros[(siniestros["SEXO"] == "Masculino") & (siniestros["ENTIDAD"] == entidad)]["NUMERO DE SINIESTROS"].sum()
+    lista.append(["Femenino", entidad, femenino_ocurrencias])
+    lista.append(["Masculino", entidad, masculino_ocurrencias])
+
+new_df = pd.DataFrame(lista, columns=["SEXO", "ENTIDAD", "OCURRENCIAS"])
+
+fig = px.bar(new_df, x="ENTIDAD", y="OCURRENCIAS", color="SEXO", barmode="group",
+             title="Número de siniestros por entidad y sexo")
+fig.update_layout(xaxis_title="Entidad", yaxis_title="Número de siniestros", legend_title="Sexo")
+fig.show()
