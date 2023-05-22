@@ -75,5 +75,3 @@ app.layout = html.Div(children=[
 # Iniciar la aplicación de Dash
 if __name__ == '__main__':
     app.run_server(debug=True)
-
-
