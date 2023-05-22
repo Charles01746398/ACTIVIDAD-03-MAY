@@ -1,0 +1,38 @@
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import pandas as pd
+import plotly.graph_objects as go
+from dash.dependencies import Input, Output
+
+df = pd.read_csv('/Users/danielramirezhernandez/LIMPIEZA/ACTIVIDAD-03-MAY/DATOS/Emisiones_limpio.csv')
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div(children=[
+    html.H1('Gráfico de Prima Emitida'),
+    dcc.Graph(id='grafico'),
+    html.Label('Seleccione un rango de fechas:'),
+    dcc.RangeSlider(
+        id='selector-fechas',
+        marks={i: str(df['FECHA'][i]) for i in range(len(df))},
+        min=0,
+        max=len(df) - 1,
+        value=[0, len(df) - 1]
+    )
+])
+@app.callback(
+    Output('grafico', 'figure'),
+    [Input('selector-fechas', 'value')]
+)
+def actualizar_grafico(rango_fechas):
+    datos_seleccionados = df.iloc[rango_fechas[0]:rango_fechas[1] + 1]
+
+    figura = go.Figure(data=[go.Scatter(x=datos_seleccionados['FECHA'], y=datos_seleccionados['PRIMA EMITIDA'])])
+    figura.update_layout(title='PRIMA EMITIDA', xaxis=dict(title='FECHA'), yaxis=dict(title='PRIMA EMITIDA'))
+
+    return figura
+if __name__ == '__main__':
+    app.run_server(debug=True)
+
+
