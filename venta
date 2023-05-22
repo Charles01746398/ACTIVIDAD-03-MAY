@@ -1,0 +1,52 @@
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import pandas as pd
+from dash.dependencies import Input, Output
+import plotly.graph_objs as go
+
+datos = pd.read_csv('/Users/danielramirezhernandez/LIMPIEZA/ACTIVIDAD-03-MAY/DATOS/Emisiones_limpio.csv')  
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    dcc.Graph(id='grafico-dinamico'),
+    dcc.Interval(
+        id='interval-component',
+        interval=1000,  
+        n_intervals=0
+    )
+])
+
+@app.callback(
+    Output('grafico-dinamico', 'figure'),
+    [Input('interval-component', 'n_intervals')]
+)
+def update_graph(n):
+    
+    
+    forma_venta_asegurados = datos.groupby('FORMA DE VENTA')['NUMERO DE ASEGURADOS'].sum()
+    
+    x = forma_venta_asegurados.index.tolist()
+    y = forma_venta_asegurados.tolist()
+    
+    trace = go.Bar(
+        x=x,
+        y=y,
+        marker=dict(color='#1F77B4')  
+    )
+    
+    layout = go.Layout(
+        title='Relación entre Forma de Venta y Número de Asegurados',
+        xaxis=dict(title='Forma de Venta'),
+        yaxis=dict(title='Número de Asegurados'),
+        showlegend=False,
+        margin=dict(l=50, r=50, t=80, b=80),
+    )
+    
+    figura = go.Figure(data=[trace], layout=layout)
+    
+    return figura
+
+if __name__ == '__main__':
+    app.run_server(debug=True)

@@ -1,0 +1,57 @@
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import pandas as pd
+from dash.dependencies import Input, Output
+import plotly.graph_objs as go
+
+datos = pd.read_csv('/Users/danielramirezhernandez/LIMPIEZA/ACTIVIDAD-03-MAY/DATOS/Siniestros_limpio.csv')  
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    dcc.Graph(id='grafico-dinamico'),
+    dcc.Interval(
+        id='interval-component',
+        interval=1000,  # Actualiza el gráfico cada 1 segundo (puedes ajustar el intervalo según tus necesidades)
+        n_intervals=0
+    )
+])
+
+@app.callback(
+    Output('grafico-dinamico', 'figure'),
+    [Input('interval-component', 'n_intervals')]
+)
+def update_graph(n):
+    # Filtra los datos según el intervalo de tiempo que desees
+    # y realiza el cálculo necesario para obtener los valores de la pirámide de siniestros
+    # Puedes utilizar la función pandas groupby y agg para realizar los cálculos necesarios
+    
+    # Por ejemplo, supongamos que tienes una columna 'Año' con el año del siniestro y una columna 'Cantidad' con la cantidad de siniestros
+    datos_filtrados = datos[datos['Año'] <= 2022]  # Filtra los datos hasta el año 2022
+    siniestros_por_año = datos_filtrados.groupby('Año')['Cantidad'].sum()
+    
+    # Genera los datos para la pirámide de siniestros
+    labels = siniestros_por_año.index.tolist()
+    valores = siniestros_por_año.tolist()
+    
+    trace = go.Pie(
+        labels=labels,
+        values=valores,
+        hole=0.4,
+        marker=dict(colors=['#FF7F0E', '#1F77B4', '#FFD700', '#2CA02C', '#D62728']),  # Colores personalizados
+    )
+    
+    layout = go.Layout(
+        title='Pirámide de Siniestros',
+        showlegend=True,
+        legend=dict(x=0.85, y=1.1),
+        margin=dict(l=50, r=50, t=80, b=80),
+    )
+    
+    figura = go.Figure(data=[trace], layout=layout)
+    
+    return figura
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
