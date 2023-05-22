@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 import dash
-from dash import dcc
+import dash_core_components as dcc
 import dash_html_components as html
 
 def cargarArchivo(ruta): 
@@ -11,7 +11,7 @@ def cargarArchivo(ruta):
 
 emisiones = cargarArchivo("DATOS/Emisiones_limpio.csv")
 
-#print(emisiones.head()), para comprobar la carga de los datos
+print(emisiones.head())
 
 entidades = emisiones["ENTIDAD"].unique()
 
@@ -49,11 +49,14 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 
+# Cargar los datos
 emisiones = pd.read_csv("DATOS/Emisiones_limpio.csv")
 comisiones = pd.read_csv("DATOS/Comisiones_limpio.csv")
 
+# Crear la aplicación de Dash
 app = dash.Dash(__name__)
 
+# Crear el layout
 app.layout = html.Div(children=[
     html.H1(children='Número de asegurados por entidad y sexo'),
     dcc.Graph(
@@ -69,18 +72,6 @@ app.layout = html.Div(children=[
     )
 ])
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
-
-app = dash.Dash(__name__)
-
-app.layout = html.Div([
-    html.H1("Dashboard de Seguros"),
-    html.Div([
-        dcc.Graph(figure=fig_entidades),
-        dcc.Graph(figure=fig_polizas)
-    ], className="row")
-])
-
+# Iniciar la aplicación de Dash
 if __name__ == '__main__':
     app.run_server(debug=True)
